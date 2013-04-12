@@ -1,4 +1,4 @@
 
 exports.rain = new require("events").EventEmitter
 
-exports.boots = require("./boots").boots
+exports.boots = require("./boots")
