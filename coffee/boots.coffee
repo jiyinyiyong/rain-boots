@@ -1,32 +1,41 @@
 
-fs = require "fs"
 path = require "path"
-tools = require "./tools"
+fs = require "fs"
 
-try require "coffee-script"
+exports.recurse = recurse = (path_name) ->
+  children = []
+  (fs.readdirSync path_name).forEach (child_name) ->
+    child_path = path.join path_name, child_name
+    if fs.statSync(child_path).isDirectory()
+      (recurse child_path).forEach (a_path) ->
+        children.push a_path
+    else
+      children.push child_path
+  children
 
-home = process.env.HOME
-config_coffee = "#{home}/.config/rain-boots.coffee"
-config_js = "#{home}/.config/rain-boots.js"
-config_json = "#{home}/.config/rain-boots.json"
+exports.write = (filename, content) ->
+  fs.writeFileSync filename, content, "utf8"
+exports.read = (filename) ->
+  fs.readFileSync filename, "uf8"
 
-exports.configs = configs = 
-  if fs.existsSync config_coffee then (require config_coffee).configs
-  else if fs.existsSync config_js then (require config_js).configs
-  else if fs.existsSync config_json then require config_json
-  else {}
+exports.log = console.log
 
-exports.boots = boots = (options) ->
-  for program, all of options
-    for name, configs of all
-      if configs.inputdir? and (not configs.children?)
-        children = tools.recurse configs.inputdir
-        if configs.fileFilter?
-          children = children.filter (filename) ->
-            filename.match configs.fileFilter
-        all.children = children
-  options
+exports.erase_path = erase_path = (path_name) ->
+  if fs.existsSync path_name
+    status = fs.statSync path_name
+    if status.isDirectory()
+      file_list = fs.readdirSync path_name
+      file_list.forEach (file_name) ->
+        file_path = path.join path_name, file_name
+        erase_path file_path
+      fs.rmdirSync path_name
+    else
+      erase_file path_name
+  else
+    console.log "no path named", path_name
 
-boots.package = require "../package.json"
-
-boots[name] = handler for name, handler of tools
+exports.erase_file = erase_file = (file_name) ->
+  if fs.existsSync file_name
+    fs.unlinkSync file_name
+  else
+    console.log "no file named", file_name
