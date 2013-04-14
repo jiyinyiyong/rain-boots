@@ -12,6 +12,9 @@
   },
   "devDependencies": {
   },
+  "dependencies": {
+    "chokidar": "*"
+  },
   "author": "jiyinyiyong",
   "license": "MIT"
 }

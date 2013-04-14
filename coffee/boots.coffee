@@ -39,3 +39,5 @@ exports.erase_file = erase_file = (file_name) ->
     fs.unlinkSync file_name
   else
     console.log "no file named", file_name
+
+exports.watch = require("chokidar").watch
