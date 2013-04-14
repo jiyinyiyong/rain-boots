@@ -41,3 +41,20 @@ exports.erase_file = erase_file = (file_name) ->
     console.log "no file named", file_name
 
 exports.watch = require("chokidar").watch
+
+exports.timestamp = time = -> new Date().getTime()
+
+exports.throttle = (interval, callback) ->
+  if ((typeof interval) is "function") and not callback?
+    callback = interval
+    interval = 600
+  if callback.timestamp?
+    first = no
+  else
+    first = yes
+    callback.timestamp = time()
+  timestamp = time()
+  time_ok = (timestamp - callback.timestamp) > interval
+  if time_ok or first
+    callback()
+    callback.timestamp = time()
